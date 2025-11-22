@@ -11,7 +11,8 @@ A lightweight C++ playground for experimenting with persona-driven agents that c
 - Persona-driven prompts that combine character, behaviour, and memory JSON assets.
 - Groq Responses API client built on `libcurl` and `nlohmann::json`.
 - CLI demo that loads personas from `characters/` and performs a single turn with optional tool-calls.
-- Simple extension points for adding new tools and custom memory handling.
+- Simple extension points for adding new tools and custom memory handling, including a native MCP
+  bridge when you want the model to talk to an external MCP server.
 
 ## Project layout
 - `include/`: public headers for building agents, requests, and responses.
@@ -24,6 +25,8 @@ A lightweight C++ playground for experimenting with persona-driven agents that c
 - **Authentication:** set the `GROQ_API_KEY` environment variable to your Groq API key before running. Requests without a key will fail against the live service.
 - **Behavior:** sends text prompts and decodes any `tool_calls` array returned in the first choice message; unexpected shapes are ignored gracefully.
 - **Supported models:** examples use Groq's compatible models such as `llama3-groq-8b-8192-tool-use-preview` and `mixtral-8x7b-32768` (update as new models become available).
+- **MCP native tool:** set `MCP_WEBSOCKET_URL` to automatically add a Model Context Protocol tool entry that
+  points to your websocket MCP server (the tool is sent as `{"type": "mcp", "mcp": {"server": {"transport": {"type": "websocket", "url": "..."}}}}`).
 
 ## Building
 Prerequisites: CMake (3.16+), a C++17 compiler, `libcurl` development headers, and internet access for FetchContent to download `nlohmann::json`.

@@ -19,9 +19,17 @@ GroqBackend::GroqBackend(GroqConfig config) : config_(std::move(config)) {}
 nlohmann::json GroqBackend::prepare_tools(const std::vector<ToolDefinition>& tools) const {
     nlohmann::json tool_array = nlohmann::json::array();
     for (const auto& tool : tools) {
-        nlohmann::json tool_json;
-        to_json(tool_json, tool);
-        tool_array.push_back({{"type", "function"}, {"function", tool_json}});
+        if (tool.use_mcp) {
+            nlohmann::json mcp_spec = tool.mcp_spec;
+            if (mcp_spec.is_null()) {
+                mcp_spec = nlohmann::json::object();
+            }
+            tool_array.push_back({{"type", "mcp"}, {"mcp", mcp_spec}});
+        } else {
+            nlohmann::json tool_json;
+            to_json(tool_json, tool);
+            tool_array.push_back({{"type", "function"}, {"function", tool_json}});
+        }
     }
     return tool_array;
 }
