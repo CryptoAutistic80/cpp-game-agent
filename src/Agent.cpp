@@ -88,7 +88,17 @@ std::vector<AgentAction> Agent::parse_tool_calls(const nlohmann::json& message_j
 
     for (const auto& call : message_json.at("tool_calls")) {
         AgentAction action;
-        action.type = "tool_call";
+        action.type = call.value("type", "tool_call");
+
+        if (action.type == "mcp" && call.contains("mcp")) {
+            if (call.contains("id")) {
+                action.tool_name = call.at("id").get<std::string>();
+            }
+            action.arguments = call.at("mcp");
+            actions.push_back(action);
+            continue;
+        }
+
         if (call.contains("function")) {
             const auto& func = call.at("function");
             if (func.contains("name")) {

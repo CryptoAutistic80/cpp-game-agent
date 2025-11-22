@@ -44,6 +44,15 @@ int main() {
         {{"type", "object"}, {"properties", {{"phrase", {{"type", "string"}}}}}, {"required", {"phrase"}}},
     });
 
+    const char* mcp_ws = std::getenv("MCP_WEBSOCKET_URL");
+    if (mcp_ws) {
+        nlohmann::json mcp_spec = {
+            {"server", {{"transport", {{"type", "websocket"}, {"url", mcp_ws}}}}},
+        };
+        tools.push_back(ToolDefinition::MCP(mcp_spec));
+        std::cout << "Added MCP tool targeting websocket server at " << mcp_ws << "\n";
+    }
+
     std::string user_message = "Describe the current mission and propose the first move.";
     std::cout << "Sending prompt...\n";
 
